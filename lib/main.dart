@@ -200,6 +200,7 @@ class _SegmentationPageState extends State<SegmentationPage> {
   OrtSession? _encoderSession;
   OrtSession? _decoderSession;
   bool _isProcessing = false;
+  bool _isSaving = false;
   File? _imageFile;
   img.Image? _originalImage;
   img.Image? _maskImage;
@@ -482,37 +483,52 @@ class _SegmentationPageState extends State<SegmentationPage> {
       return;
     }
 
-    final hasAccess = await Gal.hasAccess();
-    if (!hasAccess) {
-      final status = await Gal.requestAccess();
-      if (!status) {
-        if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Storage permission is required to save images.'),
-          ),
-        );
-        return;
-      }
-    }
-
-    final finalImage = img.Image.from(_originalImage!);
-    for (int y = 0; y < finalImage.height; y++) {
-      for (int x = 0; x < finalImage.width; x++) {
-        final maskPixel = _maskImage!.getPixel(x, y);
-        if (maskPixel.a == 0) {
-          finalImage.setPixelRgba(x, y, 0, 0, 0, 0);
-        }
-      }
-    }
-
-    final pngBytes = img.encodePng(finalImage);
-    final tempDir = await getTemporaryDirectory();
-    final tempPath =
-        '${tempDir.path}/segmented_${DateTime.now().millisecondsSinceEpoch}.png';
-    final tempFile = await File(tempPath).writeAsBytes(pngBytes);
+    setState(() {
+      _isSaving = true;
+    });
 
     try {
+      final hasAccess = await Gal.hasAccess();
+      if (!hasAccess) {
+        final status = await Gal.requestAccess();
+        if (!status) {
+          if (!mounted) return;
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Storage permission is required to save images.'),
+            ),
+          );
+          return;
+        }
+      }
+
+      final finalImage = img.Image(
+        width: _originalImage!.width,
+        height: _originalImage!.height,
+        numChannels: 4,
+      );
+
+      for (int y = 0; y < finalImage.height; y++) {
+        for (int x = 0; x < finalImage.width; x++) {
+          final originalPixel = _originalImage!.getPixel(x, y);
+          final maskPixel = _maskImage!.getPixel(x, y);
+          finalImage.setPixelRgba(
+            x,
+            y,
+            originalPixel.r.toInt(),
+            originalPixel.g.toInt(),
+            originalPixel.b.toInt(),
+            maskPixel.a.toInt(),
+          );
+        }
+      }
+
+      final pngBytes = img.encodePng(finalImage);
+      final tempDir = await getTemporaryDirectory();
+      final tempPath =
+          '${tempDir.path}/segmented_${DateTime.now().millisecondsSinceEpoch}.png';
+      final tempFile = await File(tempPath).writeAsBytes(pngBytes);
+
       await Gal.putImage(tempFile.path);
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -523,6 +539,12 @@ class _SegmentationPageState extends State<SegmentationPage> {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text('Failed to save image: $e')));
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isSaving = false;
+        });
+      }
     }
   }
 
@@ -664,9 +686,20 @@ class _SegmentationPageState extends State<SegmentationPage> {
                     label: const Text('Pick Image'),
                   ),
                   ElevatedButton.icon(
-                    onPressed: _maskImage != null ? _saveImage : null,
-                    icon: const Icon(Icons.save_alt),
-                    label: const Text('Save Image'),
+                    onPressed: (_maskImage != null && !_isSaving)
+                        ? _saveImage
+                        : null,
+                    icon: _isSaving
+                        ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.white,
+                            ),
+                          )
+                        : const Icon(Icons.save_alt),
+                    label: Text(_isSaving ? 'Saving...' : 'Save Image'),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.teal,
                       foregroundColor: Colors.white,
