@@ -80,7 +80,7 @@ Future<IsolateResult> processAndCompositeInIsolate(IsolateParams params) async {
     for (int x = 0; x < 256; x++) {
       final pixelValue = processedBytes[y * 256 + x];
       if (pixelValue > 0) {
-        lowResImage.setPixelRgba(x, y, 0, 255, 0, 150);
+        lowResImage.setPixelRgba(x, y, 0, 255, 0, 255);
       }
     }
   }
