@@ -12,6 +12,7 @@ class IsolateParams {
   final Uint8List originalImageBytes;
   final bool fillHoles;
   final bool removeIslands;
+  final bool selectLargestArea;
 
   IsolateParams({
     required this.lowResMasksList,
@@ -21,6 +22,7 @@ class IsolateParams {
     required this.originalImageBytes,
     required this.fillHoles,
     required this.removeIslands,
+    required this.selectLargestArea,
   });
 }
 
@@ -47,7 +49,6 @@ Future<IsolateResult> processAndCompositeInIsolate(IsolateParams params) async {
   final int maskSize = 256 * 256;
   final int maskOffset = bestMaskIdx * maskSize;
   final maskSlice = masksData.sublist(maskOffset, maskOffset + maskSize);
-
   final binaryMaskImage = img.Image(
     width: 256,
     height: 256,
@@ -63,8 +64,49 @@ Future<IsolateResult> processAndCompositeInIsolate(IsolateParams params) async {
 
   final bmpBytes = img.encodeBmp(binaryMaskImage);
   var processedMat = cv.imdecode(bmpBytes, cv.IMREAD_GRAYSCALE);
-  final kernel = cv.getStructuringElement(cv.MORPH_RECT, (5, 5));
 
+  if (params.selectLargestArea) {
+    // Correctly handle the tuple returned by findContours
+    final (contours, hierarchy) = cv.findContours(
+      processedMat,
+      cv.RETR_EXTERNAL,
+      cv.CHAIN_APPROX_SIMPLE,
+    );
+
+    if (contours.isNotEmpty) {
+      double maxArea = 0;
+      int maxAreaIdx = -1;
+      for (int i = 0; i < contours.length; i++) {
+        final area = cv.contourArea(contours.elementAt(i));
+        if (area > maxArea) {
+          maxArea = area;
+          maxAreaIdx = i;
+        }
+      }
+
+      if (maxAreaIdx != -1) {
+        final newMask = cv.Mat.zeros(
+          processedMat.rows,
+          processedMat.cols,
+          cv.MatType.CV_8UC1,
+        );
+        cv.drawContours(
+          newMask,
+          contours,
+          maxAreaIdx,
+          cv.Scalar.all(255),
+          thickness: -1,
+        );
+        processedMat.dispose();
+        processedMat = newMask;
+      }
+    }
+    // Dispose both objects to prevent memory leaks
+    contours.dispose();
+    hierarchy.dispose();
+  }
+
+  final kernel = cv.getStructuringElement(cv.MORPH_RECT, (5, 5));
   if (params.fillHoles) {
     processedMat = cv.morphologyEx(processedMat, cv.MORPH_CLOSE, kernel);
   }
@@ -75,7 +117,6 @@ Future<IsolateResult> processAndCompositeInIsolate(IsolateParams params) async {
 
   final lowResImage = img.Image(width: 256, height: 256, numChannels: 4);
   final processedBytes = processedMat.data;
-
   for (int y = 0; y < 256; y++) {
     for (int x = 0; x < 256; x++) {
       final pixelValue = processedBytes[y * 256 + x];
@@ -87,7 +128,6 @@ Future<IsolateResult> processAndCompositeInIsolate(IsolateParams params) async {
 
   kernel.dispose();
   processedMat.dispose();
-
   final finalMask = img.copyResize(
     lowResImage,
     width: params.originalWidth,

@@ -210,6 +210,13 @@ class _SegmentationPageState extends State<SegmentationPage> {
                         onChanged: (value) => cubit.toggleRemoveIslands(value),
                         dense: true,
                       ),
+                      SwitchListTile(
+                        title: const Text('Select Largest Area'),
+                        value: state.selectLargestArea,
+                        onChanged: (value) =>
+                            cubit.toggleSelectLargestArea(value),
+                        dense: true,
+                      ),
                     ],
                   ),
                 );

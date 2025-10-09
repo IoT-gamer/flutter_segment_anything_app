@@ -126,7 +126,7 @@ Follow these instructions to get a copy of the project up and running on your lo
 
 6. Continue tapping on the image to refine the mask. Add positive points to areas the mask missed, or negative points to remove unwanted areas.
 
-7. After the first point is added, **"Fill Holes"** and **"Remove Islands"** toggles will appear at the bottom. Use these to clean up the final mask. The mask will update automatically.
+7. After the first point is added, post-processing toggles like **"Fill Holes"**, **"Remove Islands"**, and **"Select Largest Area"** will appear at the bottom. Use these to clean up the final mask. The mask updates automatically.
 
 8. If you are happy with the result, tap the **"Save Image"** button.
 

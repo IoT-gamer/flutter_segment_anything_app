@@ -1,5 +1,3 @@
-// lib/features/segmentation/cubit/segmentation_state.dart
-
 part of 'segmentation_cubit.dart';
 
 enum SegmentationStatus {
@@ -23,6 +21,7 @@ class SegmentationState extends Equatable {
     this.currentPointLabel = 1,
     this.fillHoles = false,
     this.removeIslands = false,
+    this.selectLargestArea = false,
     this.errorMessage,
   });
 
@@ -35,6 +34,7 @@ class SegmentationState extends Equatable {
   final int currentPointLabel;
   final bool fillHoles;
   final bool removeIslands;
+  final bool selectLargestArea;
   final String? errorMessage;
 
   SegmentationState copyWith({
@@ -47,6 +47,7 @@ class SegmentationState extends Equatable {
     int? currentPointLabel,
     bool? fillHoles,
     bool? removeIslands,
+    bool? selectLargestArea,
     String? errorMessage,
     bool clearMask = false,
   }) {
@@ -60,6 +61,7 @@ class SegmentationState extends Equatable {
       currentPointLabel: currentPointLabel ?? this.currentPointLabel,
       fillHoles: fillHoles ?? this.fillHoles,
       removeIslands: removeIslands ?? this.removeIslands,
+      selectLargestArea: selectLargestArea ?? this.selectLargestArea,
       errorMessage: errorMessage ?? this.errorMessage,
     );
   }
@@ -75,6 +77,7 @@ class SegmentationState extends Equatable {
     currentPointLabel,
     fillHoles,
     removeIslands,
+    selectLargestArea,
     errorMessage,
   ];
 }

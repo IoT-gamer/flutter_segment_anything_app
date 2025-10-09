@@ -104,6 +104,11 @@ class SegmentationCubit extends Cubit<SegmentationState> {
     _runSegmentation();
   }
 
+  void toggleSelectLargestArea(bool value) {
+    emit(state.copyWith(selectLargestArea: value));
+    _runSegmentation();
+  }
+
   Future<void> _runSegmentation() async {
     if (_encoderSession == null ||
         _decoderSession == null ||
@@ -164,6 +169,7 @@ class SegmentationCubit extends Cubit<SegmentationState> {
         originalImageBytes: await state.imageFile!.readAsBytes(),
         fillHoles: state.fillHoles,
         removeIslands: state.removeIslands,
+        selectLargestArea: state.selectLargestArea,
       );
 
       final IsolateResult result = await compute(
