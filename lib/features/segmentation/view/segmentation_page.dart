@@ -223,6 +223,30 @@ class _SegmentationPageState extends State<SegmentationPage> {
               },
             ),
 
+            BlocBuilder<SegmentationCubit, SegmentationState>(
+              buildWhen: (p, c) => p.imageFile != c.imageFile,
+              builder: (context, state) {
+                if (state.imageFile == null) {
+                  return const SizedBox.shrink();
+                }
+                return Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24.0,
+                    vertical: 8.0,
+                  ),
+                  child: TextField(
+                    decoration: const InputDecoration(
+                      labelText: 'Class Name (Optional)',
+                      hintText: 'e.g., "cat", "person", "car"',
+                      border: OutlineInputBorder(),
+                      isDense: true,
+                    ),
+                    onChanged: (value) => cubit.setClassName(value),
+                  ),
+                );
+              },
+            ),
+
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: BlocBuilder<SegmentationCubit, SegmentationState>(

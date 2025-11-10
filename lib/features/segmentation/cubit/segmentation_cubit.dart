@@ -94,6 +94,10 @@ class SegmentationCubit extends Cubit<SegmentationState> {
     emit(state.copyWith(currentPointLabel: label));
   }
 
+  void setClassName(String name) {
+    emit(state.copyWith(className: name));
+  }
+
   void toggleFillHoles(bool value) {
     emit(state.copyWith(fillHoles: value));
     _runSegmentation();
@@ -237,6 +241,10 @@ class SegmentationCubit extends Cubit<SegmentationState> {
             maskPixel.a.toInt(),
           );
         }
+      }
+
+      if (state.className.isNotEmpty) {
+        finalImage.addTextData({'className': state.className});
       }
 
       final pngBytes = img.encodePng(finalImage);

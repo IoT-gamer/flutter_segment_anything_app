@@ -22,6 +22,8 @@ A Flutter mobile application that performs interactive, on-device image segmenta
 
 * ✨ **Transparent Cutouts:** Save the segmented object as a new PNG image with a fully transparent background.
 
+* 🏷️ **Metadata Tagging:** Optionally add a "class name" (e.g., "cat", "person") to the saved PNG's metadata for future use.
+
 * 📱 **Cross-Platform:** Built with Flutter for both Android and iOS.
 
 
@@ -128,9 +130,11 @@ Follow these instructions to get a copy of the project up and running on your lo
 
 7. After the first point is added, post-processing toggles like **"Fill Holes"**, **"Remove Islands"**, and **"Select Largest Area"** will appear at the bottom. Use these to clean up the final mask. The mask updates automatically.
 
-8. If you are happy with the result, tap the **"Save Image"** button.
+8. Optionally, type a class name (e.g., "cat", "person") into the text field that appears at the bottom.
 
-9. The app will save a new PNG file to your gallery containing only the segmented object with a transparent background.
+9. If you are happy with the result, tap the **"Save Image"** button.
+
+10. The app will save a new PNG file to your gallery containing only the segmented object with a transparent background.
 
 ## Acknowledgments
 

@@ -22,6 +22,7 @@ class SegmentationState extends Equatable {
     this.fillHoles = false,
     this.removeIslands = false,
     this.selectLargestArea = false,
+    this.className = '',
     this.errorMessage,
   });
 
@@ -35,6 +36,7 @@ class SegmentationState extends Equatable {
   final bool fillHoles;
   final bool removeIslands;
   final bool selectLargestArea;
+  final String className;
   final String? errorMessage;
 
   SegmentationState copyWith({
@@ -48,6 +50,7 @@ class SegmentationState extends Equatable {
     bool? fillHoles,
     bool? removeIslands,
     bool? selectLargestArea,
+    String? className,
     String? errorMessage,
     bool clearMask = false,
   }) {
@@ -62,6 +65,7 @@ class SegmentationState extends Equatable {
       fillHoles: fillHoles ?? this.fillHoles,
       removeIslands: removeIslands ?? this.removeIslands,
       selectLargestArea: selectLargestArea ?? this.selectLargestArea,
+      className: className ?? this.className,
       errorMessage: errorMessage ?? this.errorMessage,
     );
   }
@@ -78,6 +82,7 @@ class SegmentationState extends Equatable {
     fillHoles,
     removeIslands,
     selectLargestArea,
+    className,
     errorMessage,
   ];
 }
