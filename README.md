@@ -73,25 +73,45 @@ Follow these instructions to get a copy of the project up and running on your lo
     
     Download or generate the `edgetam_encoder.onnx` and `edgetam_decoder.onnx` files. Place them inside the `assets/models/` directory in the project root.
 
-4. **Configure OpenCV:**
 
-    To minimize app size, `opencv_dart` requires you to specify which native modules you need. Add the following to your `pubspec.yaml`:
-    ```yaml
-    hooks:
-      user_defines:
-        dartcv4:
-          include_modules:
-            - core      # Always required for basic structures like cv.Mat
-            - imgproc   # Needed for morphologyEx, getStructuringElement, etc.
-            - imgcodecs # Needed for imdecode
+4.  **Configure iOS Podfile**
+
+    For iOS builds, update your `ios/Podfile` to set the required iOS version (16 or above) and enable static framework linkage for `flutter_onnxruntime`.
+
+    **Add this at the top of the Podfile:**
+
+    ```ruby
+    platform :ios, '16.0'   # Required for flutter_onnxruntime (iOS 16 or above)
     ```
 
-4. **Install dependencies:**
+    **Add this inside the `target 'Runner' do` block:**
+
+    ```ruby
+    use_frameworks! :linkage => :static   # REQUIRED for ONNX Runtime
+    ```
+
+    Example (`ios/Podfile`) 
+
+    ```ruby
+    platform :ios, '16.0'   # Add this at the top
+
+    target 'Runner' do
+        use_frameworks! :linkage => :static   # Add this inside the Runner target
+
+        flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
+
+        target 'RunnerTests' do
+            inherit! :search_paths
+        end
+    end
+    ```
+
+5. **Install dependencies:**
 
     ```bash
     flutter pub get
     ```
-5. **Configure Platform Permissions:**
+6. **Configure Platform Permissions:**
 
     You must add permission descriptions to the native platform configuration files to allow the app to save images to the photo gallery.
 
@@ -108,7 +128,7 @@ Follow these instructions to get a copy of the project up and running on your lo
         <application android:requestLegacyExternalStorage="true">
         ```
 
-6. **Run the app:**
+7. **Run the app:**
 
     ```bash
     flutter run

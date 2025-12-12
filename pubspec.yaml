@@ -18,10 +18,11 @@ dependencies:
   gal: ^2.3.2
   image: ^4.5.4
   image_picker: ^1.2.0
-  opencv_dart: ^1.4.3
+  # opencv_dart: ^1.4.3 # no implementation of opencv in image_processing.dart
   path_provider: ^2.1.5
   equatable: ^2.0.7
   flutter_bloc: ^9.1.1
+  bloc: ^9.1.0 # added since segmentation_cubit.dart requires bloc
 
 dev_dependencies:
   flutter_test:
@@ -33,10 +34,10 @@ flutter:
   assets:
     - assets/models/
 
-hooks:
-  user_defines:
-    dartcv4:
-      include_modules:
-        - core      # Always required for basic structures like cv.Mat
-        - imgproc   # Needed for morphologyEx, getStructuringElement, etc.
-        - imgcodecs # Needed for imdecode
+# hooks:
+#   user_defines:
+#     dartcv4:
+#       include_modules:
+#         - core      # Always required for basic structures like cv.Mat
+#         - imgproc   # Needed for morphologyEx, getStructuringElement, etc.
+#         - imgcodecs # Needed for imdecode
