@@ -48,14 +48,17 @@ For more information on the model, please see the official [EdgeTAM repository](
 * **Image Saving:** `gal`
 * **Image Processing & Morphology:** `image`, `opencv_dart`
 * **Coordinate Transformation:** `vector_math`
-* **State Management:** `StatefulWidget` (built-in)
+* **State Management:** `StatefulWidget` and `cubit` pattern
 
 ## Getting Started
 
 Follow these instructions to get a copy of the project up and running on your local machine.
 ### Prerequisites
-* An installed and configured **Flutter SDK** (version 3.x or higher).
+* An installed and configured **Flutter SDK** (Dart SDK >= 3.10.0).
 * A physical device or emulator for Android or iOS.
+* **CMake** (required by `opencv_dart`'s use of Dart 3.10 **build hooks**).
+  * **macOS:** `brew install cmake`
+  * **Linux:** `sudo apt-get install cmake`
 
 ### Setup
 
@@ -86,12 +89,12 @@ Follow these instructions to get a copy of the project up and running on your lo
             - imgcodecs # Needed for imdecode
     ```
 
-4. **Install dependencies:**
+5. **Install dependencies:**
 
     ```bash
     flutter pub get
     ```
-5. **Configure Platform Permissions:**
+6. **Configure Platform Permissions:**
 
     You must add permission descriptions to the native platform configuration files to allow the app to save images to the photo gallery.
 
@@ -107,8 +110,21 @@ Follow these instructions to get a copy of the project up and running on your lo
         <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="28" />
         <application android:requestLegacyExternalStorage="true">
         ```
+7. **iOS Specific Setup:**
 
-6. **Run the app:**
+    In `ios/Podfile`, change the following lines:
+
+    ```ruby
+    platform :ios, '16.0'
+
+    # existing code ...
+
+    use_frameworks! :linkage => :static
+
+    # existing code ...
+    ```
+   
+8. **Run the app:**
 
     ```bash
     flutter run
