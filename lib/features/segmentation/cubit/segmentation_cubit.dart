@@ -310,9 +310,7 @@ class SegmentationCubit extends Cubit<SegmentationState> {
       pointLabelsList.add(p.label.toDouble());
     }
 
-    pointCoordsList.addAll([0.0, 0.0]);
-    pointLabelsList.add(0.0);
-    final int numPoints = state.points.length + 1;
+    final int numPoints = state.points.length;
     final coordValue = await OrtValue.fromList(
       Float32List.fromList(pointCoordsList),
       [1, numPoints, 2],
