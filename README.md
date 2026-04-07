@@ -70,7 +70,22 @@ Follow these instructions to get a copy of the project up and running on your lo
     ```
 2. **Generate ONNX Models:**
 
-    Use [edgetam_onnx_export.ipynb](https://github.com/IoT-gamer/segment-anything-dinov3-onnx/blob/main/notebooks/edgetam_onnx_export.ipynb) notebook to export the EdgeTAM model to ONNX format. Ensure you have the required dependencies installed in your Python environment or open the notebook in Google Colab.
+    * Download EdgeTAM encoder and decoder from [Qualcomm's AI Hub](https://aihub.qualcomm.com/models/edgetam)
+    * Select **ONNX Runtime** as the target framework and choose the appropriate device for mobile deployment.
+    * unzip the downloaded files
+    * merge the `model.data` and `model.onnx` files for both encoder and decoder to create `edgetam_encoder.onnx` and `edgetam_decoder.onnx`.
+        #### python example for merging ONNX files with external data:
+        ```python
+        import onnx
+        # Load the model (ensure `model.data` is in the same folder)
+        model_enc = onnx.load("encoder/model.onnx")
+        # Save it back to a single file
+        # This will embed the external data into the .onnx file itself
+        onnx.save(model_enc, "edgetam_encoder.onnx")
+
+        model_dec = onnx.load("decoder/model.onnx")
+        onnx.save(model_dec, "edgetam_decoder.onnx")
+        ```
 
 3. **Place ONNX Models:**
     
