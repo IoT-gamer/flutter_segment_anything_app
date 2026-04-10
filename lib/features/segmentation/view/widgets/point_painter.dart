@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import '../../models/segmentation_models.dart';
 
 class PointPainter extends CustomPainter {
-  PointPainter(this.points, this.originalImageSize);
+  PointPainter(this.points, this.originalImageSize, {this.boundingBox});
   final List<SegmentationPoint> points;
   final Size originalImageSize;
+  final Rect? boundingBox;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -31,6 +32,36 @@ class PointPainter extends CustomPainter {
       destSize.width,
       destSize.height,
     );
+
+    // Draw the bounding box
+    if (boundingBox != null) {
+      final double left =
+          (boundingBox!.left * (destRect.width / originalImageSize.width)) +
+          destRect.left;
+      final double top =
+          (boundingBox!.top * (destRect.height / originalImageSize.height)) +
+          destRect.top;
+      final double right =
+          (boundingBox!.right * (destRect.width / originalImageSize.width)) +
+          destRect.left;
+      final double bottom =
+          (boundingBox!.bottom * (destRect.height / originalImageSize.height)) +
+          destRect.top;
+
+      final Rect scaledBox = Rect.fromLTRB(left, top, right, bottom);
+
+      final Paint boxPaint = Paint()
+        ..color = Colors.blue
+        ..strokeWidth = 2.5
+        ..style = PaintingStyle.stroke;
+
+      final Paint boxBgPaint = Paint()
+        ..color = Colors.blue.withAlpha(50)
+        ..style = PaintingStyle.fill;
+
+      canvas.drawRect(scaledBox, boxBgPaint);
+      canvas.drawRect(scaledBox, boxPaint);
+    }
 
     for (final p in points) {
       final double widgetX =

@@ -85,6 +85,7 @@ class SegmentationCubit extends Cubit<SegmentationState> {
         points: [],
         maskImageData: null,
         clearMask: true,
+        clearBox: true,
         status: SegmentationStatus.success,
       ),
     );
@@ -92,6 +93,18 @@ class SegmentationCubit extends Cubit<SegmentationState> {
 
   void setPointLabel(int label) {
     emit(state.copyWith(currentPointLabel: label));
+  }
+
+  void toggleBoxMode() {
+    emit(state.copyWith(isBoxMode: !state.isBoxMode));
+  }
+
+  void updateBoundingBox(Rect? box) {
+    emit(state.copyWith(boundingBox: box));
+  }
+
+  void submitBoundingBox() {
+    _runSegmentation();
   }
 
   void setClassName(String name) {
@@ -118,10 +131,6 @@ class SegmentationCubit extends Cubit<SegmentationState> {
         _decoderSession == null ||
         state.imageFile == null) {
       return; // Or emit failure state
-    }
-    if (state.points.isEmpty) {
-      emit(state.copyWith(clearMask: true, status: SegmentationStatus.success));
-      return;
     }
 
     emit(state.copyWith(status: SegmentationStatus.processing));
@@ -303,6 +312,7 @@ class SegmentationCubit extends Cubit<SegmentationState> {
     final List<double> pointLabelsList = [];
     final int originalWidth = state.originalImage!.width;
     final int originalHeight = state.originalImage!.height;
+
     for (final p in state.points) {
       final double modelTapX = p.point.dx * (_modelInputSize / originalWidth);
       final double modelTapY = p.point.dy * (_modelInputSize / originalHeight);
@@ -310,15 +320,35 @@ class SegmentationCubit extends Cubit<SegmentationState> {
       pointLabelsList.add(p.label.toDouble());
     }
 
-    final int numPoints = state.points.length;
+    // Inject Bounding Box Points
+    if (state.boundingBox != null) {
+      final box = state.boundingBox!;
+      final double modelStartX = box.left * (_modelInputSize / originalWidth);
+      final double modelStartY = box.top * (_modelInputSize / originalHeight);
+      final double modelEndX = box.right * (_modelInputSize / originalWidth);
+      final double modelEndY = box.bottom * (_modelInputSize / originalHeight);
+
+      pointCoordsList.addAll([modelStartX, modelStartY, modelEndX, modelEndY]);
+      pointLabelsList.addAll([2.0, 3.0]); // 2: Top-Left, 3: Bottom-Right
+    }
+
+    final int numPoints = pointLabelsList.length;
+
+    // If we have no points and no box, provide a dummy point to prevent ONNX crash
+    if (numPoints == 0) {
+      pointCoordsList.addAll([0.0, 0.0]);
+      pointLabelsList.add(0.0);
+    }
+
     final coordValue = await OrtValue.fromList(
       Float32List.fromList(pointCoordsList),
-      [1, numPoints, 2],
+      [1, numPoints == 0 ? 1 : numPoints, 2],
     );
     final labelValue = await OrtValue.fromList(
       Float32List.fromList(pointLabelsList),
-      [1, numPoints],
+      [1, numPoints == 0 ? 1 : numPoints],
     );
+
     return {'onnx_coord': coordValue, 'onnx_label': labelValue};
   }
 

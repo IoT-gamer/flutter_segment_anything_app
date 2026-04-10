@@ -19,6 +19,8 @@ class SegmentationState extends Equatable {
     this.maskImageData,
     this.points = const [],
     this.currentPointLabel = 1,
+    this.isBoxMode = false,
+    this.boundingBox,
     this.fillHoles = false,
     this.removeIslands = false,
     this.selectLargestArea = false,
@@ -33,6 +35,8 @@ class SegmentationState extends Equatable {
   final Uint8List? maskImageData;
   final List<SegmentationPoint> points;
   final int currentPointLabel;
+  final bool isBoxMode;
+  final Rect? boundingBox;
   final bool fillHoles;
   final bool removeIslands;
   final bool selectLargestArea;
@@ -47,6 +51,9 @@ class SegmentationState extends Equatable {
     Uint8List? maskImageData,
     List<SegmentationPoint>? points,
     int? currentPointLabel,
+    bool? isBoxMode,
+    Rect? boundingBox,
+    bool clearBox = false,
     bool? fillHoles,
     bool? removeIslands,
     bool? selectLargestArea,
@@ -62,6 +69,8 @@ class SegmentationState extends Equatable {
       maskImageData: clearMask ? null : maskImageData ?? this.maskImageData,
       points: points ?? this.points,
       currentPointLabel: currentPointLabel ?? this.currentPointLabel,
+      isBoxMode: isBoxMode ?? this.isBoxMode,
+      boundingBox: clearBox ? null : boundingBox ?? this.boundingBox,
       fillHoles: fillHoles ?? this.fillHoles,
       removeIslands: removeIslands ?? this.removeIslands,
       selectLargestArea: selectLargestArea ?? this.selectLargestArea,
@@ -79,6 +88,8 @@ class SegmentationState extends Equatable {
     maskImageData,
     points,
     currentPointLabel,
+    isBoxMode,
+    boundingBox,
     fillHoles,
     removeIslands,
     selectLargestArea,

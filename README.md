@@ -1,6 +1,8 @@
 # Flutter Segment Anything: On-Device Image Segmentation
 
-A Flutter mobile application that performs interactive, on-device image segmentation using the **EdgeTAM model**. Users can select an image from their gallery, tap on an object to create a segmentation mask, and then refine the mask by filling holes or removing small, isolated regions. The final result can be saved as a new image with a transparent background. This project demonstrates the power of running complex deep learning models directly on mobile devices using Flutter and the ONNX Runtime
+A Flutter mobile application that performs interactive, on-device image segmentation using the **EdgeTAM model**. Users can select an image from their gallery, tap on an object or draw a bounding box to create a segmentation mask, and then refine the mask by filling holes or removing small, isolated regions. The final result can be saved as a new image with a transparent background.
+
+This project demonstrates the power of running complex deep learning models directly on mobile devices using Flutter and the ONNX Runtime.
 
 ## Screenshots
 
@@ -9,6 +11,8 @@ A Flutter mobile application that performs interactive, on-device image segmenta
 ## Features
 
 * 📷 **Pick from Gallery:** Select any image from your device's photo library.
+
+* 🔲 **Bounding Box Selection:** Toggle "Box Mode" and drag your finger to draw a precise bounding box around an object for instant segmentation.
 
 * 👆 **Interactive Segmentation:** Tap on any object in the image to generate a precise segmentation mask.
 
@@ -153,14 +157,16 @@ Follow these instructions to get a copy of the project up and running on your lo
 
 3. Once the image is displayed, you can pinch to zoom or drag to pan for a better view.
 
-4. Tap on the object you want to segment. A green mask will overlay the initial result.
+4. **To segment an object:**
+   * **Point Mode:** Tap directly on the object you want to segment. 
+   * **Box Mode:** Tap the Box Mode toggle button, then drag your finger across the image to draw a bounding box around the object. 
 
-5. Use the floating buttons to switch between adding **positive (include) points** and **negative (exclude) points**.
+5. A green mask will overlay the initial result.
 
-6. Continue tapping on the image to refine the mask. Add positive points to areas the mask missed, or negative points to remove unwanted areas.
+6. Use the floating buttons to switch between adding **positive (include) points** and **negative (exclude) 
+points**, or draw a new bounding box. Continue interacting with the image to refine the mask.
 
-7. After the first point is added, post-processing toggles like **"Fill Holes"**, **"Remove Islands"**, and **"Select Largest Area"** will appear at the bottom. Use these to clean up the final mask. The mask updates automatically.
-
+7. After your first selection, post-processing toggles like **"Fill Holes"**, **"Remove Islands"**, and **"Select Largest Area"** will appear at the bottom. Use these to clean up the final mask.
 8. Optionally, type a class name (e.g., "cat", "person") into the text field that appears at the bottom.
 
 9. If you are happy with the result, tap the **"Save Image"** button.
