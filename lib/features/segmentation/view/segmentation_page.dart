@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../cubit/segmentation_cubit.dart';
@@ -167,29 +168,32 @@ class _SegmentationPageState extends State<SegmentationPage> {
                           ? null
                           : (details) => _handleTapUp(details, state),
 
-                      // Handle Drags (Box Mode)
-                      onPanStart: !state.isBoxMode
+                      // Handle Drags (Box Mode with Haptic Delay)
+                      onLongPressStart: !state.isBoxMode
                           ? null
                           : (details) {
+                              // Trigger the haptic vibration!
+                              HapticFeedback.heavyImpact();
+
                               _dragStart = _getOriginalCoordinates(
                                 details.globalPosition,
                                 state,
                               );
                               setState(() {
-                                _currentDragBox =
-                                    null; // Clear previous local drawing
+                                _currentDragBox = null;
                               });
                             },
-                      onPanUpdate: !state.isBoxMode
+                      onLongPressMoveUpdate: !state.isBoxMode
                           ? null
                           : (details) {
                               if (_dragStart == null) return;
+
                               final currentOriginal = _getOriginalCoordinates(
                                 details.globalPosition,
                                 state,
                               );
+
                               if (currentOriginal != null) {
-                                // Update the UI locally for real-time 60fps drawing
                                 setState(() {
                                   _currentDragBox = Rect.fromPoints(
                                     _dragStart!,
@@ -198,11 +202,10 @@ class _SegmentationPageState extends State<SegmentationPage> {
                                 });
                               }
                             },
-                      onPanEnd: !state.isBoxMode
+                      onLongPressEnd: !state.isBoxMode
                           ? null
                           : (details) {
                               if (_currentDragBox != null) {
-                                // Commit the final box to the Cubit and run inference
                                 cubit.updateBoundingBox(_currentDragBox);
                                 cubit.submitBoundingBox();
                               }
@@ -212,6 +215,7 @@ class _SegmentationPageState extends State<SegmentationPage> {
                                 _currentDragBox = null;
                               });
                             },
+
                       child: InteractiveViewer(
                         transformationController: _transformationController,
                         minScale: 0.5,
