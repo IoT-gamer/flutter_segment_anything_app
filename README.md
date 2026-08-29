@@ -158,6 +158,14 @@ points**, or draw a new bounding box. Continue interacting with the image to ref
 
 10. The app will save a new PNG file to your gallery containing only the segmented object with a transparent background.
 
+## Troubleshooting
+
+If you suspect the .onnx files in `assets/models` are not getting updated in your installed app: 
+1. Run `flutter clean` in your project terminal.
+2. Run `flutter pub get` to refresh your dependencies.
+3. Go to your device settings, find the app, and **clear all data** (or uninstall the app completely).
+4. Run `flutter run` to build a fresh installation with your new assets.
+
 ## Acknowledgments
 
 * This project is heavily reliant on the research and models provided by the Meta AI Research team in their [EdgeTAM project](https://github.com/facebookresearch/EdgeTAM).
