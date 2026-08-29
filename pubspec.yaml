@@ -14,13 +14,13 @@ dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.8
-  flutter_onnxruntime: ^1.6.4
-  gal: ^2.3.2
-  image: ^4.8.0
-  image_picker: ^1.2.1
-  opencv_dart: ^2.1.0
-  path_provider: ^2.1.5
-  equatable: ^2.0.8
+  flutter_onnxruntime: ^1.8.4
+  gal: ^2.3.3
+  image: ^4.9.2
+  image_picker: ^1.2.3
+  opencv_dart: ^2.2.2
+  path_provider: ^2.1.6
+  equatable: ^2.1.0
   flutter_bloc: ^9.1.1
 
 dev_dependencies:
